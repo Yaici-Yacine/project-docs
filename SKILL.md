@@ -1,6 +1,6 @@
 ---
 name: project-docs
-description: Project documentation manager. Creates and maintains a docs/ tree with skill/ (project rules, conventions) and wiki/ (feature documentation). Use when running /create-docs, /read-docs, /strict, /add-feature, /add-rule, /update-rules, /fix-feature, or /audit-docs commands.
+description: Project documentation manager. Creates and maintains a docs/ tree with skill/ (project rules, conventions) and wiki/ (feature documentation). Use when running /create-docs, /read-docs, /strict, /add-feature, /validate-us, /sync-plan, /add-rule, /update-rules, /fix-feature, or /audit-docs commands.
 ---
 
 # Project Docs Skill
@@ -28,6 +28,8 @@ Load this skill when:
 - Reading project rules before implementing something
 - Updating project conventions
 - Enforcing project rules and conventions strictly when coding, refactoring, or reviewing
+- Validating user story quality and acceptance criteria with codebase tests
+- Synchronizing implementation plans with completed code
 - Auditing documentation completeness
 
 ---
@@ -132,21 +134,25 @@ Strict Mode Guarantees:
 
 ---
 
-### `/add-feature [feature-name] [us: ...]`
+### `/add-feature [feature-name] [us: ...] [ac: ...]`
 **Adds a new feature documentation page to the wiki.**
 
 Steps:
 1. If no feature name provided, ask: "What feature do you want to document?"
-2. Check if a user story was provided after `us:` — if yes, extract it as the US text. If not provided, skip (do not ask).
-3. Check if `docs/wiki/features/[feature-name].md` already exists. If yes, ask: "Update existing page or create new?"
-4. Explore the codebase to find all files related to this feature.
-5. Create `docs/wiki/features/[feature-name].md` using the structure below, filling it with real content.
-6. Update `docs/wiki/INDEX.md` to add this feature to the index.
-7. Report: "✅ Feature '[name]' documented at docs/wiki/features/[name].md"
+2. Check if a user story was provided after `us:` — if yes, extract it as the US text.
+3. Check if acceptance criteria were provided after `ac:` — if yes, extract them as bullet criteria.
+4. Check if `docs/wiki/features/[feature-name].md` already exists. If yes, ask: "Update existing page or create new?"
+5. Explore the codebase to find all files related to this feature.
+6. Create `docs/wiki/features/[feature-name].md` using the structure below, filling it with real content.
+7. Update `docs/wiki/INDEX.md` to add this feature to the index.
+8. Report: "✅ Feature '[name]' documented at docs/wiki/features/[name].md"
 
-**User Story rule:** If a `us:` argument was provided, write it as a blockquote at the very top of the feature page, BEFORE everything else:
-```
+**User Story & Acceptance Criteria rule:** If a `us:` argument was provided, format it at the top of the feature page:
+```markdown
 > 👤 **User Story:** As a [user], I want to [action], so that [benefit].
+>
+> 📋 **Acceptance Criteria:**
+> - [ ] Given [precondition], when [action], then [outcome]
 ```
 If no `us:` was given, omit this section entirely — do not add a placeholder.
 
@@ -178,6 +184,38 @@ The feature page must contain these sections IN ORDER:
 ```
 The implementation plan must be filled with real tasks inferred from the codebase — not generic placeholders.
 
+
+### `/validate-us [feature-name | us: ... [ac: ...]]`
+**Validates user stories against INVEST criteria and checks code & test compliance.**
+
+Steps:
+1. Determine validation target:
+   - **Feature name provided (`/validate-us [feature-name]`)**: read `docs/wiki/features/[feature-name].md`. Extract the user story and acceptance criteria. If absent, propose drafting one from the feature purpose and code.
+   - **Inline user story provided (`/validate-us us: [text] [ac: ...]`)**: validate the story and criteria provided in FR or EN.
+   - **No argument (`/validate-us`)**: scan all feature pages in `docs/wiki/features/` and produce a global user story coverage report.
+2. Check structural quality using the **INVEST** framework:
+   - Independent, Negotiable, Valuable (clear persona and benefit), Estimable, Small, Testable.
+3. Verify implementation in code:
+   - Confirm that routes, UI components, and services fulfill the user action and delivered benefit.
+   - Check automated test presence and coverage for the story's happy path and edge cases.
+4. Generate 2-4 concrete **Gherkin Acceptance Criteria** (`Given / When / Then`).
+5. Output the validation report (INVEST score, code status, test status, Gherkin criteria, recommendations).
+6. If validated on an existing feature page, offer to update the feature file with the refined story and acceptance criteria.
+
+---
+
+### `/sync-plan [feature-name]`
+**Scans codebase and automatically checks off completed tasks in feature Implementation Plans.**
+
+Steps:
+1. Locate the feature page in `docs/wiki/features/[feature-name].md` (or run on `all`).
+2. Parse the `## Implementation Plan` section.
+3. For each unchecked task (`- [ ]`), inspect the project source code, routes, and tests to verify if the functionality is implemented.
+4. If verified, update the checkbox to `- [x]` in the file.
+5. Update the phase and overall status (`Status: Not Started | In Progress | Complete`).
+6. Update the `Last updated:` timestamp and output a synchronization report showing progress percentage and newly completed tasks.
+
+---
 ---
 
 ### `/update-rules`
@@ -282,6 +320,8 @@ Steps:
 - When unsure about a feature's purpose, look at tests and usage sites in the codebase
 - User stories (`us:`) are optional — never ask for them if not provided, never add placeholder text
 - Under `/strict`, rules in `docs/skill/` are hard constraints: zero tolerance for forbidden patterns, missing types, or naming deviations
+- User stories validated with `/validate-us` must follow INVEST criteria and specify verifiable acceptance criteria (Gherkin)
+- Implementation plans synchronized with `/sync-plan` must reflect actual working code, not placeholders
 
 ## Anti-Patterns
 - ❌ Creating empty/placeholder documentation

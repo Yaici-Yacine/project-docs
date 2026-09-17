@@ -20,3 +20,5 @@
 2. Run `/audit-docs` to check for documentation gaps
 3. Run `/update-rules` to update project rules
 4. Run `/strict [task]` to implement or audit code with strict rule enforcement
+5. Run `/validate-us [name]` to validate feature user story and check test coverage
+6. Run `/sync-plan [name]` to synchronize implementation plan with codebase

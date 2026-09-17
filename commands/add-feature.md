@@ -1,8 +1,8 @@
 ---
-description: Add a new feature documentation page to docs/wiki/features/ (usage: /add-feature [feature-name] [us: ...])
+description: Add a new feature documentation page to docs/wiki/features/ (usage: /add-feature [feature-name] [us: ...] [ac: ...])
 ---
 
-# /add-feature [feature-name] [us: ...]
+# /add-feature [feature-name] [us: ...] [ac: ...]
 
 Adds a new feature documentation page to the wiki.
 
@@ -11,21 +11,30 @@ Arguments: `$*`
 ## Steps:
 1. If no feature name provided, ask: "What feature do you want to document?"
 2. Check if a user story was provided after `us:` — if yes, extract it as the US text. If not provided, skip (do not ask).
-3. Check if `docs/wiki/features/[feature-name].md` already exists. If yes, ask: "Update existing page or create new?"
-4. Explore the codebase to find all files related to this feature.
-5. Create `docs/wiki/features/[feature-name].md` using the structure below, filling it with real content.
-6. Update `docs/wiki/INDEX.md` to add this feature to the index.
-7. Report: "✅ Feature '[name]' documented at docs/wiki/features/[name].md"
+3. Check if acceptance criteria were provided after `ac:` — if yes, extract them as bullet criteria. If not provided, skip (do not ask).
+4. Check if `docs/wiki/features/[feature-name].md` already exists. If yes, ask: "Update existing page or create new?"
+5. Explore the codebase to find all files related to this feature.
+6. Create `docs/wiki/features/[feature-name].md` using the structure below, filling it with real content.
+7. Update `docs/wiki/INDEX.md` to add this feature to the index.
+8. Report: "✅ Feature '[name]' documented at docs/wiki/features/[name].md"
 
-## User Story Rule:
-If a `us:` argument was provided, write it as a blockquote at the very top of the feature page, BEFORE everything else:
+## User Story & Acceptance Criteria Rule:
+- If a `us:` argument was provided, write it as a blockquote at the very top of the feature page, BEFORE everything else:
 ```markdown
 > 👤 **User Story:** As a [user], I want to [action], so that [benefit].
 ```
-If no `us:` was given, omit this section entirely — do not add a placeholder.
+- If an `ac:` argument was provided alongside `us:`, format each criterion as an unchecked task item under the story:
+```markdown
+> 👤 **User Story:** As a [user], I want to [action], so that [benefit].
+>
+> 📋 **Acceptance Criteria:**
+> - [ ] [Criterion 1 / Given... When... Then...]
+> - [ ] [Criterion 2]
+```
+- If neither was given, omit this section entirely — do not add placeholders.
 
 ## Feature Page Sections (IN ORDER):
-1. `> 👤 User Story` — (only if provided via `us:`)
+1. `> 👤 User Story` & `📋 Acceptance Criteria` — (only if provided via `us:` / `ac:`)
 2. **Purpose** — What this feature does and why it exists
 3. **Location** — Main files/folders (`src/features/auth/`, etc.)
 4. **How It Works** — Step-by-step explanation of the logic

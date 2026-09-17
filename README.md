@@ -140,7 +140,9 @@ Une fois le skill installé, ces commandes sont disponibles dans votre agent :
 | `/create-docs` | Initialise l'arborescence `docs/` complète à partir d'une analyse du projet |
 | `/read-docs` | Lit et résume la documentation existante |
 | `/strict [tâche \| fichier \| on \| off]` | Applique les règles et conventions de `docs/skill/` à la lettre (tolérance zéro) |
-| `/add-feature [nom] [us: ...]` | Ajoute une fiche feature dans `docs/wiki/features/` |
+| `/add-feature [nom] [us: ...] [ac: ...]` | Ajoute une fiche feature avec User Story et critères d'acceptation |
+| `/validate-us [nom \| us: ...]` | Valide une User Story (INVEST), génère les critères Gherkin et vérifie code & tests |
+| `/sync-plan [nom]` | Scanne le code et coche automatiquement les tâches de l'Implementation Plan |
 | `/add-rule [règle]` | Ajoute une règle ciblée dans `RULES.md` ou `CONVENTIONS.md` |
 | `/update-rules` | Met à jour `RULES.md` / `CONVENTIONS.md` (analyse le code) |
 | `/fix-feature [nom]` | Corrige ou enrichit une fiche feature existante |
@@ -167,12 +169,11 @@ bunx skills add Yaici-Yacine/project-docs --skill project-docs
 /create-docs
 ```
 
-### 2. Documenter une nouvelle feature avec user story
+### 2. Documenter une nouvelle feature avec User Story et critères d'acceptation
 
 ```text
-/add-feature user-authentication us: En tant qu'utilisateur, je veux me connecter avec email + mot de passe, afin d'accéder à mon tableau de bord.
+/add-feature user-authentication us: En tant qu'utilisateur, je veux me connecter avec email + mot de passe, afin d'accéder à mon tableau de bord. ac: Doit valider l'email, Doit refuser les mots de passe < 8 caractères, Doit émettre un JWT
 ```
-
 ### 3. Auditer la couverture de la doc
 
 ```text
@@ -201,6 +202,32 @@ Activer le mode strict pour toute la session :
 ```
 
 L'agent consulte immédiatement `docs/skill/RULES.md` et `docs/skill/CONVENTIONS.md`, bloque tout pattern interdit (`❌`), et conclut systématiquement chaque tâche par une checklist de conformité stricte.
+
+### 5. Valider une User Story (`/validate-us`)
+
+Valider la User Story d'une feature et vérifier sa couverture dans le code et les tests :
+```text
+/validate-us user-authentication
+```
+
+Valider une User Story à la volée (critères INVEST + génération de critères Gherkin) :
+```text
+/validate-us us: En tant qu'utilisateur, je veux réinitialiser mon mot de passe par email, afin de récupérer l'accès à mon compte.
+```
+
+Auditer la couverture globale des User Stories du projet :
+```text
+/validate-us
+```
+
+### 6. Synchroniser le plan d'implémentation (`/sync-plan`)
+
+Scanner le code et cocher automatiquement les tâches terminées dans `Implementation Plan` :
+```text
+/sync-plan user-authentication
+# ou synchroniser l'ensemble des features :
+/sync-plan all
+```
 
 ---
 
@@ -255,6 +282,8 @@ project-docs/
 │   ├── read-docs.md
 │   ├── strict.md
 │   ├── add-feature.md
+│   ├── validate-us.md
+│   ├── sync-plan.md
 │   ├── add-rule.md
 │   ├── update-rules.md
 │   ├── fix-feature.md
