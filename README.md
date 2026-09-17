@@ -127,7 +127,7 @@ ls -la .claude/skills/project-docs/
 ls -la .agents/skills/project-docs/
 ```
 
-Vous devez voir au minimum `SKILL.md` (manifeste du skill) et éventuellement un dossier `templates/`.
+Vous devez voir au minimum `SKILL.md` (manifeste du skill), le dossier `commands/` (commandes séparées pour la détection automatique par les Code CLIs) et le dossier `templates/`.
 
 ---
 
@@ -139,12 +139,20 @@ Une fois le skill installé, ces commandes sont disponibles dans votre agent :
 | --- | --- |
 | `/create-docs` | Initialise l'arborescence `docs/` complète à partir d'une analyse du projet |
 | `/read-docs` | Lit et résume la documentation existante |
+| `/strict [tâche \| fichier \| on \| off]` | Applique les règles et conventions de `docs/skill/` à la lettre (tolérance zéro) |
 | `/add-feature [nom] [us: ...]` | Ajoute une fiche feature dans `docs/wiki/features/` |
 | `/add-rule [règle]` | Ajoute une règle ciblée dans `RULES.md` ou `CONVENTIONS.md` |
 | `/update-rules` | Met à jour `RULES.md` / `CONVENTIONS.md` (analyse le code) |
 | `/fix-feature [nom]` | Corrige ou enrichit une fiche feature existante |
 | `/audit-docs` | Audite la couverture de la documentation vs le code |
 
+
+### 💡 Détection automatique par les Code CLIs (Claude Code, OpenCode, etc.)
+
+Chaque commande est **séparée dans son propre fichier Markdown** dans le dossier `commands/` (`commands/strict.md`, `commands/create-docs.md`, etc.).
+Les Code CLIs (Claude Code, OpenCode, Cursor, etc.) détectent et indexent automatiquement ces fichiers pour les proposer dans leur menu d'auto-complétion `/` :
+- **Claude Code** : détecte les commandes dans `commands/` (ou directement via `.claude/commands/`).
+- **OpenCode** : détecte les commandes dans `commands/` ou `.opencode/commands/`.
 ---
 
 ## Exemples d'usage
@@ -172,6 +180,27 @@ bunx skills add Yaici-Yacine/project-docs --skill project-docs
 ```
 
 L'agent retourne un rapport listant les features non documentées, les pages obsolètes et les sections manquantes.
+
+### 4. Suivre les règles à la lettre (`/strict`)
+
+Exécuter une tâche avec respect absolu des règles :
+```text
+/strict refactorer le module d'authentification
+```
+
+Auditer les modifications en cours par rapport aux règles du projet :
+```text
+/strict
+# ou cibler un fichier précis :
+/strict src/features/auth/auth.service.ts
+```
+
+Activer le mode strict pour toute la session :
+```text
+/strict on
+```
+
+L'agent consulte immédiatement `docs/skill/RULES.md` et `docs/skill/CONVENTIONS.md`, bloque tout pattern interdit (`❌`), et conclut systématiquement chaque tâche par une checklist de conformité stricte.
 
 ---
 
@@ -211,7 +240,7 @@ rm -rf .agents/skills/project-docs
   ```bash
   npm config set registry https://registry.npmjs.org/
   ```
-  Ou clonez manuellement votre dépôt et copiez `SKILL.md` + `templates/` dans `.claude/skills/project-docs/`.
+  Ou clonez manuellement votre dépôt et copiez `SKILL.md`, `commands/` et `templates/` dans `.claude/skills/project-docs/`.
 
 ---
 
@@ -221,6 +250,15 @@ rm -rf .agents/skills/project-docs
 project-docs/
 ├── README.md          ← ce fichier
 ├── SKILL.md           ← manifeste (lu par l'agent)
+├── commands/          ← commandes séparées détectées par les Code CLIs
+│   ├── create-docs.md
+│   ├── read-docs.md
+│   ├── strict.md
+│   ├── add-feature.md
+│   ├── add-rule.md
+│   ├── update-rules.md
+│   ├── fix-feature.md
+│   └── audit-docs.md
 ├── templates/         ← fichiers générés par /create-docs
 │   ├── skill/
 │   │   ├── RULES.md

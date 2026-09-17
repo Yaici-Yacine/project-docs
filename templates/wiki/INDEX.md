@@ -19,3 +19,4 @@
 1. Run `/add-feature [name]` to document a new feature
 2. Run `/audit-docs` to check for documentation gaps
 3. Run `/update-rules` to update project rules
+4. Run `/strict [task]` to implement or audit code with strict rule enforcement

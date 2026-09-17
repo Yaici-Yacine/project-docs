@@ -1,6 +1,6 @@
 ---
 name: project-docs
-description: Project documentation manager. Creates and maintains a docs/ tree with skill/ (project rules, conventions) and wiki/ (feature documentation). Use when running /create-docs, /read-docs, /add-feature, /add-rule, /update-rules, /fix-feature, or /audit-docs commands.
+description: Project documentation manager. Creates and maintains a docs/ tree with skill/ (project rules, conventions) and wiki/ (feature documentation). Use when running /create-docs, /read-docs, /strict, /add-feature, /add-rule, /update-rules, /fix-feature, or /audit-docs commands.
 ---
 
 # Project Docs Skill
@@ -27,11 +27,14 @@ Load this skill when:
 - Adding documentation for a new feature
 - Reading project rules before implementing something
 - Updating project conventions
+- Enforcing project rules and conventions strictly when coding, refactoring, or reviewing
 - Auditing documentation completeness
 
 ---
 
 ## Commands
+All commands are also available as individual files under `commands/` (`commands/[command].md`) so that coding CLIs (Claude Code, OpenCode, Cursor, etc.) automatically detect and register them as slash commands.
+
 
 ### `/create-docs`
 **Creates the full `docs/` tree from scratch in the current project.**
@@ -77,6 +80,54 @@ Output format:
 
 ### ⚠️ Issues Found
 [list any gaps, missing pages, outdated content]
+```
+
+---
+
+### `/strict [task | file | on | off]`
+**Enforces project rules and conventions to the letter with zero tolerance.**
+
+Steps:
+1. Check that `docs/skill/RULES.md` and `docs/skill/CONVENTIONS.md` exist. If missing, warn: "⚠️ `docs/skill/` rules not found. Run `/create-docs` first."
+2. Read both files thoroughly to load all project rules, coding standards, architecture constraints, naming conventions, import orders, and forbidden patterns (`❌`).
+3. Determine execution mode based on arguments:
+   - **Task execution (`/strict [task description]`)**:
+     1. Identify all applicable rules from `RULES.md` and `CONVENTIONS.md` before writing or modifying any code.
+     2. Execute the task strictly adhering to every rule to the letter. No shortcuts, no `any`, no implicit types, no forbidden patterns, no convention deviations.
+     3. Refuse any requested implementation detail that contradicts a documented rule; explain why and implement the rule-compliant alternative.
+     4. Verify all modified/created files against the rules checklist before reporting completion.
+     5. Report the result with a mandatory **Strict Compliance Checklist**.
+   - **Audit mode (`/strict` or `/strict [file/folder]`)**:
+     1. If no argument is provided, inspect current unstaged and staged changes (`git diff`). If a file or folder path is given, inspect the target code.
+     2. Cross-reference every touched or targeted line of code against all rules in `docs/skill/RULES.md` and `docs/skill/CONVENTIONS.md`.
+     3. Output a **Strict Compliance Audit Report**:
+        ```
+        ## 🛡️ Strict Compliance Audit Report
+
+        ### ✅ Verified Rules
+        - [Rule/Convention]: [evidence of compliance]
+
+        ### ❌ Rule Violations (Zero Tolerance)
+        - **[file:line]** — `[Rule name]` — Violation: [description]. Required fix: [exact remedy].
+
+        ### ⚠️ Warnings / Fragile Patterns
+        - [Potential edge cases or borderline patterns]
+        ```
+     4. If violations exist, provide immediate fixes conforming strictly to the rules.
+   - **Session toggle (`/strict on` | `/strict off`)**:
+     - `on`: Activate persistent strict compliance mode for the entire session. All subsequent tasks must systematically verify and follow `RULES.md` and `CONVENTIONS.md` to the letter.
+     - `off`: Deactivate persistent strict mode (revert to normal guidance).
+
+Strict Mode Guarantees:
+- **Zero Tolerance:** No exceptions, waivers, or compromises. Every documented rule must be respected to the letter.
+- **Forbidden Patterns Are Blockers:** Any pattern marked `❌` in `RULES.md` is strictly prohibited.
+- **Rule Citation:** Every compliance check or violation report must explicitly cite the rule from `RULES.md` or `CONVENTIONS.md`.
+- **Compliance Checklist:** Every task executed under `/strict` must conclude with:
+```markdown
+### 🛡️ Strict Compliance Checklist
+- [x] [Rule 1]: [how verified]
+- [x] [Convention 1]: [how verified]
+- [x] Zero forbidden patterns introduced
 ```
 
 ---
@@ -230,6 +281,7 @@ Steps:
 - Never overwrite existing docs without user confirmation
 - When unsure about a feature's purpose, look at tests and usage sites in the codebase
 - User stories (`us:`) are optional — never ask for them if not provided, never add placeholder text
+- Under `/strict`, rules in `docs/skill/` are hard constraints: zero tolerance for forbidden patterns, missing types, or naming deviations
 
 ## Anti-Patterns
 - ❌ Creating empty/placeholder documentation
