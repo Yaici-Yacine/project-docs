@@ -80,6 +80,12 @@ Ensure user stories are actionable, measurable, testable, and accurately reflect
 
    ### 💡 Recommendations
    - [Concrete recommendations to improve the story, add tests, or fix code]
+
+   ### 📖 Résumé & Compréhension de la User Story (Plain-Language Summary)
+   - **Persona / Utilisateur cible :** [Qui utilise cette fonctionnalité et son rôle concret]
+   - **Besoin concret :** [Ce que l'utilisateur cherche concrètement à faire, formulé sans jargon technique]
+   - **Valeur apportée :** [Pourquoi cette fonctionnalité est essentielle, quel problème réel elle résout et le bénéfice direct]
+   - **En clair (Synthèse) :** [Explication vulgarisée en 1 à 2 phrases pour comprendre instantanément l'intention et l'impact de l'US]
    ```
 
 6. **Optional Auto-Update**:

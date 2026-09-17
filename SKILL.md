@@ -199,7 +199,7 @@ Steps:
    - Confirm that routes, UI components, and services fulfill the user action and delivered benefit.
    - Check automated test presence and coverage for the story's happy path and edge cases.
 4. Generate 2-4 concrete **Gherkin Acceptance Criteria** (`Given / When / Then`).
-5. Output the validation report (INVEST score, code status, test status, Gherkin criteria, recommendations).
+5. Output the validation report (INVEST score, code status, test status, Gherkin criteria, recommendations, and a final plain-language summary to explain and understand the User Story clearly).
 6. If validated on an existing feature page, offer to update the feature file with the refined story and acceptance criteria.
 
 ---

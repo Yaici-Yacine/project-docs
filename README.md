@@ -141,7 +141,7 @@ Une fois le skill installé, ces commandes sont disponibles dans votre agent :
 | `/read-docs` | Lit et résume la documentation existante |
 | `/strict [tâche \| fichier \| on \| off]` | Applique les règles et conventions de `docs/skill/` à la lettre (tolérance zéro) |
 | `/add-feature [nom] [us: ...] [ac: ...]` | Ajoute une fiche feature avec User Story et critères d'acceptation |
-| `/validate-us [nom \| us: ...]` | Valide une User Story (INVEST), génère les critères Gherkin et vérifie code & tests |
+| `/validate-us [nom \| us: ...]` | Valide une User Story (INVEST), vérifie code/tests et fournit un résumé vulgarisé |
 | `/sync-plan [nom]` | Scanne le code et coche automatiquement les tâches de l'Implementation Plan |
 | `/add-rule [règle]` | Ajoute une règle ciblée dans `RULES.md` ou `CONVENTIONS.md` |
 | `/update-rules` | Met à jour `RULES.md` / `CONVENTIONS.md` (analyse le code) |
@@ -219,6 +219,8 @@ Auditer la couverture globale des User Stories du projet :
 ```text
 /validate-us
 ```
+
+À la fin de chaque analyse, la commande génère un **résumé vulgarisé en langage clair** (Persona, besoin concret, valeur métier et synthèse en une phrase) pour comprendre immédiatement l'enjeu de la User Story.
 
 ### 6. Synchroniser le plan d'implémentation (`/sync-plan`)
 
