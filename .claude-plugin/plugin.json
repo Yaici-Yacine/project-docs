@@ -1,0 +1,25 @@
+{
+  "$schema": "https://code.claude.com/plugin.schema.json",
+  "name": "project-docs",
+  "displayName": "Project Docs",
+  "version": "1.0.0",
+  "description": "Project documentation manager. Creates and maintains a docs/ tree with skill/ (rules, conventions) and wiki/ (feature documentation).",
+  "author": {
+    "name": "Yaici-Yacine",
+    "url": "https://github.com/Yaici-Yacine/project-docs"
+  },
+  "repository": "https://github.com/Yaici-Yacine/project-docs",
+  "license": "MIT",
+  "keywords": [
+    "documentation",
+    "docs",
+    "wiki",
+    "rules",
+    "conventions",
+    "invest",
+    "user-story",
+    "strict"
+  ],
+  "skills": "./skills",
+  "commands": "./commands"
+}

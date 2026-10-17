@@ -30,54 +30,61 @@ bun --version
 
 ## Installation locale pour développement
 
-Pour tester votre skill en local **avant** de le publier sur GitHub :
+Pour tester votre skill en local **avant** de le publier sur GitHub et charger **toutes les commandes dans l'auto-complétion** :
 
 ```bash
 git clone https://github.com/Yaici-Yacine/project-docs.git
 cd project-docs
-bunx skills add . --skill project-docs
+bunx skills add . --all
 ```
 
-Ou en une ligne, sans cloner, depuis n'importe quel dossier de test :
+Ou en une ligne depuis n'importe quel dossier de test :
 
 ```bash
-bunx skills add /chemin/vers/project-docs --skill project-docs
+bunx skills add /chemin/vers/project-docs --all
 ```
 
-> C'est la commande la plus rapide pour itérer : vous modifiez `SKILL.md` / `templates/`, puis vous relancez la même commande pour re-installer la nouvelle version.
-
+> Le flag `--all` installe l'ensemble des 11 commandes/skills dans votre agent. Chaque commande (`/read-docs`, `/create-docs`, `/strict`, etc.) apparaît ainsi directement dans le menu d'auto-complétion `/`.
 ---
 
 ## Installation pour vos utilisateurs (skill.sh)
 
-> Une fois publié sur GitHub, vos utilisateurs peuvent installer le skill avec l'une des commandes ci-dessous.
+> Une fois publié sur GitHub, vos utilisateurs peuvent installer l'ensemble des commandes pour que l'**auto-complétion `/` de l'agent les détecte toutes** :
 
-La méthode recommandée pour installer **uniquement** ce skill :
+### Méthode recommandée (installe toutes les commandes dans l'auto-complétion) :
 
 ```bash
-bunx skills add Yaici-Yacine/project-docs --skill project-docs
+bunx skills add Yaici-Yacine/project-docs --all
 ```
 
 Équivalent avec `npx` :
 
 ```bash
-npx skills add Yaici-Yacine/project-docs --skill project-docs
-```
-
-Équivalent avec URL GitHub complète :
-
-```bash
-npx skills add https://github.com/Yaici-Yacine/project-docs --skill project-docs
-```
-
-Pour installer **tous les skills** de votre dépôt d'un coup (sélection interactive) :
-
-```bash
 npx skills add Yaici-Yacine/project-docs --all
 ```
 
-> Le skill est installé dans le dossier de configuration de votre agent (`.claude/skills/project-docs/` pour Claude Code, `.agents/skills/project-docs/` pour OpenCode, etc.). Voir [Où le skill est installé](#où-le-skill-est-installé).
+### Sélection interactive des commandes :
 
+```bash
+npx skills add Yaici-Yacine/project-docs
+```
+*(Vous permet de cocher les commandes souhaitées ou tout sélectionner)*
+
+### Installer une commande spécifique :
+
+```bash
+npx skills add Yaici-Yacine/project-docs --skill read-docs
+```
+
+### Utilisation comme Plugin Claude Code :
+
+Le dépôt contient également un manifeste `.claude-plugin/plugin.json`. Dans Claude Code, vous pouvez charger le plugin :
+```bash
+claude plugin install Yaici-Yacine/project-docs
+# ou en local :
+claude --plugin-dir /chemin/vers/project-docs
+```
+Les commandes sont alors disponibles à la fois sous forme préfixée `/project-docs:read-docs` et sous forme courte `/read-docs`.
 ---
 
 ## Publier votre skill sur GitHub
@@ -85,8 +92,8 @@ npx skills add Yaici-Yacine/project-docs --all
 Quelques étapes pour que vos utilisateurs puissent installer votre skill :
 
 - **Poussez le dépôt sur GitHub** (`git init`, `git add .`, `git commit`, `git remote add origin ...`, `git push`).
-- **Assurez-vous que `SKILL.md` est bien à la racine** du dépôt (ou dans `skills/project-docs/`) — c'est le manifeste lu par l'agent au démarrage.
-- **Incluez un dossier `templates/`** à côté du `SKILL.md` (il est consommé par `/create-docs` pour générer l'arborescence `docs/`).
+- **Assurez-vous que le dossier `skills/` est présent** avec chaque sous-dossier (`skills/read-docs/SKILL.md`, `skills/create-docs/SKILL.md`, etc.) — ce sont les manifestes qui génèrent les commandes d'auto-complétion.
+- **Le dossier `templates/`** est présent à côté et copié dans `skills/create-docs/templates/` (consommé par `/create-docs`).
 - **Testez localement d'abord** avec `bunx skills add . --skill project-docs` avant de publier.
 - *(Optionnel)* Ajoutez un badge en haut de votre README :
   ```markdown
@@ -109,26 +116,25 @@ Quelques étapes pour que vos utilisateurs puissent installer votre skill :
 
 ---
 
-## Où le skill est installé
+## Où les skills sont installés
 
-Selon l'agent utilisé, le skill atterrit dans un dossier de configuration à la racine de votre projet (ou dans `~/.config/`) :
+Selon l'agent utilisé, les skills atterrissent dans les dossiers de configuration suivants :
 
 ```
-.claude/skills/project-docs/     # Claude Code
-.agents/skills/project-docs/     # OpenCode, agents.sh générique
-.cursor/skills/project-docs/     # Cursor (selon configuration)
+.claude/skills/              # Claude Code (un dossier par commande : create-docs, read-docs, strict, etc.)
+.agents/skills/              # OpenCode, agents.sh générique
+.cursor/skills/              # Cursor (selon configuration)
 ```
 
 Vérification rapide après installation :
 
 ```bash
-ls -la .claude/skills/project-docs/
+ls -la .claude/skills/
 # ou
-ls -la .agents/skills/project-docs/
+ls -la .agents/skills/
 ```
 
-Vous devez voir au minimum `SKILL.md` (manifeste du skill), le dossier `commands/` (commandes séparées pour la détection automatique par les Code CLIs) et le dossier `templates/`.
-
+Vous verrez chaque commande installée comme un skill autonome (`create-docs`, `read-docs`, `strict`, `add-feature`, `validate-us`, `sync-plan`, `add-rule`, `update-rules`, `fix-feature`, `audit-docs`, `project-docs`), garantissant leur indexation immédiate dans le menu d'auto-complétion `/`.
 ---
 
 ## Utilisation — Commandes du skill
@@ -149,22 +155,20 @@ Une fois le skill installé, ces commandes sont disponibles dans votre agent :
 | `/audit-docs` | Audite la couverture de la documentation vs le code |
 
 
-### 💡 Détection automatique par les Code CLIs (Claude Code, OpenCode, etc.)
+### 💡 Détection automatique par les Code CLIs (Claude Code, OpenCode, Cursor, etc.)
 
-Chaque commande est **séparée dans son propre fichier Markdown** dans le dossier `commands/` (`commands/strict.md`, `commands/create-docs.md`, etc.).
-Les Code CLIs (Claude Code, OpenCode, Cursor, etc.) détectent et indexent automatiquement ces fichiers pour les proposer dans leur menu d'auto-complétion `/` :
-- **Claude Code** : détecte les commandes dans `commands/` (ou directement via `.claude/commands/`).
-- **OpenCode** : détecte les commandes dans `commands/` ou `.opencode/commands/`.
----
+Toutes les commandes sont fournies sous deux formes pour assurer 100% de compatibilité :
+1. **Dans `skills/<commande>/SKILL.md`** : Permet à `skills.sh` (`npx skills add ... --all`) d'installer chaque commande comme un skill natif. Claude Code, OpenCode et Cursor les indexent immédiatement dans leur menu d'auto-complétion `/`.
+2. **Dans `commands/<commande>.md`** : Détecté par les agents chargeant directement `.claude/commands/` ou `.opencode/commands/`.
+3. **Dans `.claude-plugin/plugin.json`** : En mode plugin Claude Code, les commandes s'affichent sous forme préfixée `/project-docs:<commande>` tout en étant invocables via `/<commande>`.
 
 ## Exemples d'usage
 
 ### 1. Démarrer un projet from scratch
 
 ```bash
-# 1) Installer le skill
-bunx skills add Yaici-Yacine/project-docs --skill project-docs
-
+# 1) Installer tous les skills et commandes dans l'auto-complétion
+bunx skills add Yaici-Yacine/project-docs --all
 # 2) Dans l'agent, générer l'arborescence
 /create-docs
 ```
@@ -277,9 +281,22 @@ rm -rf .agents/skills/project-docs
 
 ```
 project-docs/
-├── README.md          ← ce fichier
-├── SKILL.md           ← manifeste (lu par l'agent)
-├── commands/          ← commandes séparées détectées par les Code CLIs
+├── README.md                  ← ce fichier
+├── .claude-plugin/
+│   └── plugin.json            ← manifeste Plugin Claude Code
+├── skills/                    ← skills individuels pour l'auto-complétion CLI
+│   ├── project-docs/SKILL.md  ← orchestrateur global
+│   ├── create-docs/SKILL.md   ← /create-docs (avec templates)
+│   ├── read-docs/SKILL.md     ← /read-docs
+│   ├── strict/SKILL.md        ← /strict
+│   ├── add-feature/SKILL.md   ← /add-feature
+│   ├── validate-us/SKILL.md   ← /validate-us
+│   ├── sync-plan/SKILL.md     ← /sync-plan
+│   ├── add-rule/SKILL.md      ← /add-rule
+│   ├── update-rules/SKILL.md  ← /update-rules
+│   ├── fix-feature/SKILL.md   ← /fix-feature
+│   └── audit-docs/SKILL.md    ← /audit-docs
+├── commands/                  ← fichiers de commandes pour .opencode/commands et .claude/commands
 │   ├── create-docs.md
 │   ├── read-docs.md
 │   ├── strict.md
@@ -290,17 +307,14 @@ project-docs/
 │   ├── update-rules.md
 │   ├── fix-feature.md
 │   └── audit-docs.md
-├── templates/         ← fichiers générés par /create-docs
-│   ├── skill/
-│   │   ├── RULES.md
-│   │   ├── CONVENTIONS.md
-│   │   └── DECISIONS.md
-│   └── wiki/
-│       ├── INDEX.md
-│       └── features/
-└── examples/          ← (optionnel) exemples d'arborescence générée
+└── templates/                 ← templates utilisés par /create-docs
+    ├── skill/
+    │   ├── RULES.md
+    │   └── CONVENTIONS.md
+    └── wiki/
+        ├── INDEX.md
+        └── feature-template.md
 ```
-
 ---
 
 ## 👤 Auteur
